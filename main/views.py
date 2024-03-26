@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from .models import Animal, Brand, Sales, CategoryProduct, Product
+from .models import Animal, Brand, Sales, CategoryProduct, Product, Article
 from .zalivka import *
 
 # Create your views here.
@@ -9,11 +9,15 @@ def get_page(request):
     animals = Animal.objects.all()
     products = products_queryset.order_by('-top_product')[:8]
     new_products = products_queryset.order_by('-id')[:10]
+    articles = Article.objects.all()
+    brands = Brand.objects.all()
 
     context = {
         "animals": animals,
         "products": products,
         "new_products": new_products,
+        "articles": articles,
+        "brands": brands,
     }
     return render(request, 'index.html', context)
 
