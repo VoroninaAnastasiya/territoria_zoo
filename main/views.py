@@ -1,5 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.http import require_POST
 
+from cart.cart import Cart
+from cart.forms import CartAddProductForm
 from .models import Animal, Brand, Sales, CategoryProduct, Product, Article
 from .zalivka import *
 
@@ -12,17 +15,67 @@ def get_page(request):
     articles = Article.objects.all()
     brands = Brand.objects.all()
 
+    cart_product_form = CartAddProductForm()
+
     context = {
         "animals": animals,
         "products": products,
         "new_products": new_products,
         "articles": articles,
         "brands": brands,
+        "cart_product_form": cart_product_form,
     }
     return render(request, 'index.html', context)
 
 
+# def get_information_about_product_page(request, id):
+#     product = Product.objects.filter(id=id).first()
+#     context = {
+#         "product_data": product,
+#     }
+#     return render(request, 'information_about_product.html', context)
 
+
+    # post = get_object_or_404(Post,id=id)
+
+def get_result_search(request):
+    context = {}
+    if request.method == "POST":
+        if len(request.POST.get('search')) > 2:
+            result = Product.objects.filter(name__icontains=request.POST.get('search'))
+            print(result)
+            context['result'] = result
+
+        else:
+            context['error'] = 'Введите более 3 символов'
+    return render(request, 'result_search.html', context)
+
+def get_basket(request):
+
+    cart = Cart(request)
+    context= {
+        'cart': cart,
+    }
+    return render(request,'basket.html', context)
+
+
+@require_POST
+def cart_add(request, product_id):
+    cart = Cart(request)
+    product = get_object_or_404(Product, id=product_id)
+    form = CartAddProductForm(request.POST)
+    if form.is_valid():
+        cd = form.cleaned_data
+        cart.add(product=product,
+                 quantity=cd['quantity'],
+                 update_quantity=cd['update'])
+    return redirect('main')
+
+def cart_remove(request, product_id):
+    cart = Cart(request)
+    product = get_object_or_404(Product, id=product_id)
+    cart.remove(product)
+    return redirect('basket')
 
 
 
