@@ -9,7 +9,25 @@ class ProductSerializer(serializers.Serializer):
     price = serializers.DecimalField(max_digits=6, decimal_places=2)
     description = serializers.TimeField()
     image_preview = serializers.ImageField()
-    #animal = serializers.ManyRelatedField() #вложенный серализатор, созд.ранее, сделаем опциональным required=False
+    animal = AnimalSerializer(many=True)
+    #animal = serializers.ManyRelatedField() #вложенный серализатор, созд.ранее
     #AssertionError: `child_relation` is a required argument.
     top_product = serializers.IntegerField()
+
+
+class BookSerializer(serializers.Serializer):
+    name = serializers.CharField()
+
+
+
+class AuthorSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    book_set = BookSerializer(many=True)
+
+
+class ShopSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    book = BookSerializer(many=True)
+
+
 

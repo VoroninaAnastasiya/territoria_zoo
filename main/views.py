@@ -78,7 +78,8 @@ def cart_remove(request, product_id):
     return redirect('basket')
 
 
-
+def animal_add(request):
+    return render(request, 'animal_add.html')
     #@property #декоратор
     #def discounted_price(self):
     #    return round(float(self.price) * 0.9, 2)  # для товаров со скидкой 10%
